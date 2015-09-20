@@ -1,3 +1,5 @@
+'use strict';
+
 var ace = require('brace');
 var React = require('react');
 
@@ -105,7 +107,8 @@ module.exports = React.createClass({
     this.editor = null;
   },
   shouldComponentUpdate: function(nextProps, nextState) {
-    return false;
+    return !(nextProps.style === this.props.style
+      && nextProps.className === this.props.className);
   },
   componentWillReceiveProps: function(nextProps) {
     let currentRange = this.editor.selection.getRange();
@@ -146,22 +149,12 @@ module.exports = React.createClass({
     }
   },
   render: function() {
-    var attrs = {
-      style : {}
-    };
-    if (this.props.width) {
-      attrs.style.width = this.props.width;
-    }
-    if (this.props.height) {
-      attrs.style.height = this.props.height;
-    }
-    var className = this.props.className;
     return (
       <div id={this.props.name}
-        className={className}
+        className={this.props.className}
         onChange={this.onChange}
         onPaste={this.onPaste}
-        {...attrs}>
+        style={this.props.style}>
       </div>
     );
   }
