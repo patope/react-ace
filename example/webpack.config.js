@@ -19,7 +19,7 @@ module.exports = {
   ],
   module: {
     loaders: [{
-      test: /\.jsx?$/,
+      test: /\.js?$/,
       loaders: ['babel'],
       exclude: /node_modules/,
       include: __dirname
@@ -36,12 +36,12 @@ var fs = require('fs');
 if (fs.existsSync(reactAceSrc) && fs.existsSync(nodeModules)) {
   // Resolve Redux to source
   module.exports.resolve = {
-    alias: { 'react-ace':  path.join(reactAceSrc, 'ace.jsx') },
+    alias: { 'react-ace':  path.join(reactAceSrc, 'ace.js') },
     extensions: ['', '.js']
   };
   // Compile Redux from source
   module.exports.module.loaders.push({
-    test: /\.jsx?$/,
+    test: /\.js?$/,
     loaders: ['babel'],
     include: reactAceSrc
   });

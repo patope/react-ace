@@ -1,4 +1,5 @@
 var React = require('react');
+var ReactDOM = require('react-dom');
 var AceEditor  = require('react-ace');
 var brace = require('brace');
 
@@ -19,12 +20,12 @@ function onChange(newValue) {
 }
 
 // render a first
-React.render(
+ReactDOM.render(
   <AceEditor
     mode="java"
     theme="github"
     name="blah1"
-    height="6em"
+    style={{'height':'6em'}}
     onChange={onChange}
   />,
   document.getElementById('example')
@@ -35,22 +36,22 @@ React.render(
 var defaultValue = 'function onLoad(editor) { \n  console.log(\"i\'ve loaded\");\n}';
 
 //render a second
-React.render(
+ReactDOM.render(
   <AceEditor
     mode="javascript"
     theme="monokai"
     name="blah2"
     onLoad={onLoad}
     fontSize={14}
-    height="6em"
+    style={{height:'6em'}}
     value={defaultValue}
   />,
   document.getElementById('example2')
 );
 
 global.reloadProps = function() {
-  React.render(
-    <AceEditor mode="javascript" theme="solarized_light" name="blah2" fontSize={40} height="8em"/>,
+  ReactDOM.render(
+    <AceEditor mode="javascript" theme="solarized_light" name="blah2" fontSize={40} style={{height:'8em'}}/>,
     document.getElementById('example2')
   );
 };
