@@ -2,6 +2,8 @@
 
 [![npm version](https://badge.fury.io/js/react-ace.svg)](http://badge.fury.io/js/react-ace)
 
+[![Build Status](https://travis-ci.org/securingsincity/react-ace.svg)](https://travis-ci.org/securingsincity/react-ace)
+
 A react component for Ace / Brace
 
 ##Install
@@ -51,15 +53,22 @@ Available Props
 |mode| Language for parsing and code highlighting|
 |theme| theme to use|
 |style| Style for editor div|
+|className|custom className|
 |fontSize| pixel value for font-size|
 |showGutter| boolean|
 |showPrintMargin| boolean|
 |highlightActiveLine| boolean|
 |readOnly| boolean|
 |maxLines| Maximum number of lines to be displayed|
+|tabSize| tabSize number|
 |value | String value you want to populate in the code highlighter|
-|onLoad| Function onLoad |
+|onLoad| Function onLoad|
+|onBeforeLoad| function that trigger before editor setup|
 |onChange| function that occurs on document change it has 1 argument value. see the example above|
+|onCopy| function that trigger by editor `copy` event, and pass text as argument|
+|onPaste| function that trigger by editor `paste` event, and pass text as argument|
+|onFocus| function that trigger by editor `focus` event|
+|onBlur| function that trigger by editor `blur` event|
 |editorProps| Object of properties to apply directly to the Ace editor instance|
 
 
