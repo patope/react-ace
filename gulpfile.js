@@ -56,7 +56,7 @@ gulp.task('example', function() {
 
 
 gulp.task('jshint', function() {
-  gulp.src('src/**/**.js').pipe(ignore('**/__tests__/**'))
+  gulp.src('src/**/**.js')
     .pipe(babel())
     .pipe(jshint())
     .pipe(jshint.reporter('default'));
