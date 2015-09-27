@@ -50,8 +50,7 @@ Available Props
 |name| Unique Id to be used for the editor|
 |mode| Language for parsing and code highlighting|
 |theme| theme to use|
-|height| CSS value for height|
-|width| CSS value for width|
+|style| Style for editor div|
 |fontSize| pixel value for font-size|
 |showGutter| boolean|
 |showPrintMargin| boolean|

@@ -74,7 +74,7 @@ module.exports = React.createClass({
     }
   },
   componentDidMount: function() {
-    this.editor = ace.edit(this.props.name);
+    this.editor = ace.edit(this.refs.ace);
 
     var editorProps = Object.keys(this.props.editorProps);
     for (var i = 0; i < editorProps.length; i++) {
@@ -108,7 +108,9 @@ module.exports = React.createClass({
   },
   shouldComponentUpdate: function(nextProps, nextState) {
     return !(nextProps.style === this.props.style
-      && nextProps.className === this.props.className);
+      && nextProps.className === this.props.className
+      && nextProps.name === this.props.name
+    );
   },
   componentWillReceiveProps: function(nextProps) {
     let currentRange = this.editor.selection.getRange();
@@ -151,6 +153,7 @@ module.exports = React.createClass({
   render: function() {
     return (
       <div id={this.props.name}
+        ref='ace'
         className={this.props.className}
         onChange={this.onChange}
         onPaste={this.onPaste}

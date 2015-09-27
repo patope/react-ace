@@ -3,12 +3,14 @@ var gulp = require('gulp');
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
 var jshint = require('gulp-jshint');
-var react = require('gulp-react');
+var babel = require('gulp-babel');
 var uglify = require('gulp-uglify');
+var jest = require('gulp-jest-iojs');
 var streamify = require('gulp-streamify');
+var ignore = require('gulp-ignore');
 
-gulp.task('default', ['jshint', 'build'], function() {
-  gulp.watch(['src/**/**.js'], ['jshint', 'build']);
+gulp.task('default', ['jshint', 'test', 'build'], function() {
+  gulp.watch(['src/**/**.js'], ['jshint', 'test', 'build']);
 });
 
 gulp.task('build', function() {
@@ -19,6 +21,17 @@ gulp.task('build', function() {
     .bundle()
     .pipe(source('ace.js'))
     .pipe(gulp.dest('build'));
+});
+
+gulp.task('test', function() {
+  return gulp.src('test').pipe(jest({
+    verbose: true,
+    scriptPreprocessor: "../node_modules/babel-jest",
+    testDirectoryName : 'test',
+    unmockedModulePathPatterns: [
+      ".*/node_modules/react-*."
+    ]
+  }));
 });
 
 gulp.task('release', function() {
@@ -43,6 +56,8 @@ gulp.task('example', function() {
 
 
 gulp.task('jshint', function() {
-  gulp.src('src/**/**.js').pipe(react()).pipe(jshint())
+  gulp.src('src/**/**.js').pipe(ignore('**/__tests__/**'))
+    .pipe(babel())
+    .pipe(jshint())
     .pipe(jshint.reporter('default'));
 });
