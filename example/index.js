@@ -10,48 +10,60 @@ require('brace/theme/github');
 require('brace/theme/monokai');
 require('brace/theme/solarized_light');
 
-
+renderStuff('function onLoad(editor) { \n  console.log(\"i\'ve loaded\");\n}');
 function onLoad(editor) {
   console.log('i\'ve loaded');
 }
+var state = "";
+var cursorPosition = null;
 
 function onChange(newValue) {
-  console.log('change', newValue);
+  state = newValue;
+  renderStuff(state, cursorPosition);
+}
+function onChangeCursor(newValue) {
+  cursorPosition = newValue;
+  renderStuff(state, cursorPosition);
+}
+function onChangeSelection(newValue) {
+  console.log(newValue);
 }
 
-// render a first
-ReactDOM.render(
-  <AceEditor
-    mode="java"
-    theme="github"
-    name="blah1"
-    style={{'height':'6em'}}
-    onChange={onChange}
-  />,
-  document.getElementById('example')
-);
-
-
-
-var defaultValue = 'function onLoad(editor) { \n  console.log(\"i\'ve loaded\");\n}';
-
-//render a second
-ReactDOM.render(
-  <AceEditor
-    mode="javascript"
-    theme="monokai"
-    name="blah2"
-    onLoad={onLoad}
-    fontSize={14}
-    style={{height:'6em'}}
-    value={defaultValue}
-  />,
-  document.getElementById('example2')
-);
-
-global.reloadProps = function() {
+function renderStuff(value, cursorPosition) {
+  // render a first
   ReactDOM.render(
-    <AceEditor mode="javascript" theme="solarized_light" name="blah2" fontSize={40} style={{height:'8em'}}/>,
+    <AceEditor
+      mode="java"
+      theme="github"
+      name="blah1"
+      style={{'height':'6em'}}
+      cursorPosition={cursorPosition}
+      value={value}
+      onChange={onChange}
+      onChangeCursor={onChangeCursor}
+      onChangeSelection={onChangeSelection}
+      editorProps={{$blockScrolling: Infinity}}
+
+    />,
+    document.getElementById('example')
+  );
+
+  //render a second
+  ReactDOM.render(
+    <AceEditor
+      mode="javascript"
+      theme="monokai"
+      name="blah2"
+      onLoad={onLoad}
+      value={value}
+      fontSize={14}
+      cursorPosition={cursorPosition}
+      style={{height:'6em'}}
+      onChange={onChange}
+      onChangeCursor={onChangeCursor}
+      onChangeSelection={onChangeSelection}
+      editorProps={{$blockScrolling: Infinity}}
+    />,
     document.getElementById('example2')
   );
-};
+}

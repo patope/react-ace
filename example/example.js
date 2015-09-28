@@ -14,9 +14,21 @@ function onLoad(editor) {
   console.log('i\'ve loaded');
 }
 
+var state = "";
+var cursorPosition = null;
+
+
 function onChange(newValue) {
-  console.log('change',newValue)
+  state = value;
 }
+
+function onChangeCursor(newValue) {
+  console.log(newValue);
+}
+function onChangeSelection(newValue) {
+  console.log(newValue);
+}
+
 
 // render a first
 ReactDOM.render(
@@ -28,6 +40,9 @@ ReactDOM.render(
         height: "6em"
     }}
     onChange={onChange}
+    onChangeCursor={onChangeCursor}
+    onChangeSelection={onChangeSelection}
+    value={state}
     />,
   document.getElementById('example')
 );
@@ -46,7 +61,7 @@ ReactDOM.render(
     style={{
         height: "6em"
     }}
-    value={defaultValue}
+    value={state}
   />,
   document.getElementById('example2')
 );

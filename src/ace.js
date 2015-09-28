@@ -3,44 +3,60 @@
 var ace = require('brace');
 var React = require('react');
 
-module.exports = React.createClass({
-  displayName: 'ReactAce',
+export default class ReactAce extends React.Component {
 
-  propTypes: {
-    mode: React.PropTypes.string,
-    theme: React.PropTypes.string,
-    name: React.PropTypes.string,
-    className: React.PropTypes.string,
-    height: React.PropTypes.string,
-    width: React.PropTypes.string,
-    fontSize: React.PropTypes.number,
-    showGutter: React.PropTypes.bool,
-    onChange: React.PropTypes.func,
-    onCopy: React.PropTypes.func,
-    onPaste: React.PropTypes.func,
-    onFocus: React.PropTypes.func,
-    onBlur: React.PropTypes.func,
-    value: React.PropTypes.string,
-    onLoad: React.PropTypes.func,
-    onBeforeLoad: React.PropTypes.func,
-    onChangeSelection: React.PropTypes.func,
-    onChangeCursor: React.PropTypes.func,
-    maxLines: React.PropTypes.number,
-    readOnly: React.PropTypes.bool,
-    highlightActiveLine: React.PropTypes.bool,
-    tabSize: React.PropTypes.number,
-    showPrintMargin: React.PropTypes.bool,
-    cursorStart: React.PropTypes.number,
-    editorProps: React.PropTypes.object
-  },
-  getDefaultProps: function() {
+  constructor() {
+    super();
+    this.state = {
+      value: '',
+      cursorPosition: null,
+      selection: null
+    };
+  }
+
+  static get displayName() {
+    return 'ReactAce';
+  }
+
+  static get propTypes() {
+    return {
+      mode: React.PropTypes.string,
+      theme: React.PropTypes.string,
+      name: React.PropTypes.string,
+      className: React.PropTypes.string,
+      height: React.PropTypes.string,
+      width: React.PropTypes.string,
+      fontSize: React.PropTypes.number,
+      showGutter: React.PropTypes.bool,
+      onChange: React.PropTypes.func,
+      onCopy: React.PropTypes.func,
+      onPaste: React.PropTypes.func,
+      onFocus: React.PropTypes.func,
+      onBlur: React.PropTypes.func,
+      value: React.PropTypes.string,
+      onLoad: React.PropTypes.func,
+      onBeforeLoad: React.PropTypes.func,
+      onChangeSelection: React.PropTypes.func,
+      onChangeCursor: React.PropTypes.func,
+      maxLines: React.PropTypes.number,
+      readOnly: React.PropTypes.bool,
+      highlightActiveLine: React.PropTypes.bool,
+      tabSize: React.PropTypes.number,
+      showPrintMargin: React.PropTypes.bool,
+      cursorStart: React.PropTypes.number,
+      editorProps: React.PropTypes.object
+    };
+  }
+
+  static get defaultProps() {
     return {
       name: 'brace-editor',
       mode: '',
       theme: '',
-      height: '500px',
-      width: '500px',
-      defaultValue: '',
+      style: {
+        height: '500px',
+        width: '500px'
+      },
       value: '',
       fontSize: 12,
       showGutter: true,
@@ -58,130 +74,131 @@ module.exports = React.createClass({
       wrapEnabled: false,
       editorProps: {}
     };
-  },
-  onChange: function() {
-    var value = this.editor.getValue();
-    if (this.props.onChange && !this.silent) {
-      this.props.onChange(value);
-    }
-  },
-  onFocus: function() {
+  }
+
+  onChange() {
+    var value = this._getEditor().getValue();
+    this.setState({value});
+  }
+  onFocus() {
     if (this.props.onFocus) {
       this.props.onFocus();
     }
-  },
-  onBlur: function() {
+  }
+  onBlur() {
     if (this.props.onBlur) {
       this.props.onBlur();
     }
-  },
-  onCopy: function(text) {
+  }
+  onCopy(text) {
     if (this.props.onCopy) {
       this.props.onCopy(text);
     }
-  },
-  onPaste: function(text) {
+  }
+  onPaste(text) {
     if (this.props.onPaste) {
       this.props.onPaste(text);
     }
-  },
-  onChangeSelection() {
-    if (this.props.onChangeSelection) {
-      this.props.onChangeSelection(this.editor.getSelectedText());
-    }
-  },
-  onChangeCursor() {
-    if (this.props.onChangeCursor) {
-      this.props.onChangeCursor(this.editor.getCursorPosition());
-    }
-  },
-  componentDidMount: function() {
-    this.editor = ace.edit(this.refs.ace);
+  }
+  onChangeSelection(event,selection) {
+    this.setState({selection: selection.getAllRanges()});
+  }
+  onChangeCursor(event,selection) {
+    this.setState({cursorPosition: selection.getCursor()});
+  }
+
+  _getEditor() {
+    return ace.edit(this.refs.ace);
+  }
+
+  componentDidMount() {
+    let editor = ace.edit(this.refs.ace);
     if (this.props.onBeforeLoad) {
       this.props.onBeforeLoad(ace);
     }
 
     var editorProps = Object.keys(this.props.editorProps);
     for (var i = 0; i < editorProps.length; i++) {
-      this.editor[editorProps[i]] = this.props.editorProps[editorProps[i]];
+      editor[editorProps[i]] = this.props.editorProps[editorProps[i]];
     }
 
-    this.editor.getSession().setMode('ace/mode/' + this.props.mode);
-    this.editor.setTheme('ace/theme/' + this.props.theme);
-    this.editor.setFontSize(this.props.fontSize);
-    // this.editor.setValue(this.props.defaultValue || this.props.value, (this.props.selectFirstLine === true ? -1 : null), this.props.cursorStart);
-    this.editor.renderer.setShowGutter(this.props.showGutter);
-    this.editor.setOption('maxLines', this.props.maxLines);
-    this.editor.setOption('readOnly', this.props.readOnly);
-    this.editor.setOption('highlightActiveLine', this.props.highlightActiveLine);
-    this.editor.setOption('tabSize', this.props.tabSize);
-    this.editor.setShowPrintMargin(this.props.setShowPrintMargin);
-    this.editor.getSession().setUseWrapMode(this.props.wrapEnabled);
-    this.editor.renderer.setShowGutter(this.props.showGutter);
-    this.editor.on('changeSelection', this.onChangeSelection);
-    this.editor.on('changeCursor', this.onChangeCursor);
-    this.editor.on('focus', this.onFocus);
-    this.editor.on('blur', this.onBlur);
-    this.editor.on('copy', this.onCopy);
-    this.editor.on('paste', this.onPaste);
-    this.editor.on('change', this.onChange);
+    editor.setValue(this.props.value);
+    editor.getSession().setMode('ace/mode/' + this.props.mode);
+    editor.setTheme('ace/theme/' + this.props.theme);
+    editor.setFontSize(this.props.fontSize);
+    editor.renderer.setShowGutter(this.props.showGutter);
+    editor.setOption('maxLines', this.props.maxLines);
+    editor.setOption('readOnly', this.props.readOnly);
+    editor.setOption('highlightActiveLine', this.props.highlightActiveLine);
+    editor.setOption('tabSize', this.props.tabSize);
+    editor.setShowPrintMargin(this.props.setShowPrintMargin);
+    editor.getSession().setUseWrapMode(this.props.wrapEnabled);
+    editor.renderer.setShowGutter(this.props.showGutter);
+    editor.getSession().getSelection().on('changeSelection', this.onChangeSelection.bind(this));
+    editor.getSession().getSelection().on('changeCursor', this.onChangeCursor.bind(this));
+    editor.on('focus', this.onFocus.bind(this));
+    editor.on('blur', this.onBlur.bind(this));
+    editor.on('copy', this.onCopy.bind(this));
+    editor.on('paste', this.onPaste.bind(this));
+    editor.on('change', this.onChange.bind(this));
 
     if (this.props.onLoad) {
-      this.props.onLoad(this.editor);
+      this.props.onLoad(editor);
     }
-  },
+  }
 
-  componentWillUnmount: function() {
-    this.editor = null;
-  },
-  shouldComponentUpdate: function(nextProps, nextState) {
-    return !(nextProps.style === this.props.style
-      && nextProps.className === this.props.className
-      && nextProps.name === this.props.name
-    );
-  },
-  componentWillReceiveProps: function(nextProps) {
-    let currentRange = this.editor.selection.getRange();
+  componentWillReceiveProps(nextProps) {
+    let editor = ace.edit(this.refs.ace);
 
     // only update props if they are changed
     if (nextProps.mode !== this.props.mode) {
-        this.editor.getSession().setMode('ace/mode/' + nextProps.mode);
+        editor.getSession().setMode('ace/mode/' + nextProps.mode);
     }
     if (nextProps.theme !== this.props.theme) {
-        this.editor.setTheme('ace/theme/' + nextProps.theme);
+        editor.setTheme('ace/theme/' + nextProps.theme);
     }
     if (nextProps.fontSize !== this.props.fontSize) {
-        this.editor.setFontSize(nextProps.fontSize);
+        editor.setFontSize(nextProps.fontSize);
     }
     if (nextProps.maxLines !== this.props.maxLines) {
-        this.editor.setOption('maxLines', nextProps.maxLines);
+        editor.setOption('maxLines', nextProps.maxLines);
     }
     if (nextProps.readOnly !== this.props.readOnly) {
-        this.editor.setOption('readOnly', nextProps.readOnly);
+        editor.setOption('readOnly', nextProps.readOnly);
     }
     if (nextProps.highlightActiveLine !== this.props.highlightActiveLine) {
-        this.editor.setOption('highlightActiveLine', nextProps.highlightActiveLine);
+        editor.setOption('highlightActiveLine', nextProps.highlightActiveLine);
+    }
+    if (nextProps.tabSize !== this.props.tabSize) {
+        editor.setOption('tabSize', nextProps.tabSize);
     }
     if (nextProps.setShowPrintMargin !== this.props.setShowPrintMargin) {
-        this.editor.setShowPrintMargin(nextProps.setShowPrintMargin);
+        editor.setShowPrintMargin(nextProps.setShowPrintMargin);
     }
     if (nextProps.wrapEnabled !== this.props.wrapEnabled) {
-        this.editor.getSession().setUseWrapMode(nextProps.wrapEnabled);
+        editor.getSession().setUseWrapMode(nextProps.wrapEnabled);
     }
-    if (nextProps.value && this.editor.getValue() !== nextProps.value) {
-        // editor.setValue is a synchronous function call, change event is emitted before setValue return.
-        this.silent = true;
-        this.editor.setValue(nextProps.value, (this.props.selectFirstLine === true ? -1 : null));
-        if(currentRange && typeof currentRange === "object") {
-            this.editor.getSession().getSelection().setSelectionRange(currentRange);
-        }
-        this.silent = false;
+    if (this.props.value !== nextProps.value && nextProps.value != this.state.value) {
+      editor.setValue(nextProps.value);
     }
     if (nextProps.showGutter !== this.props.showGutter) {
-        this.editor.renderer.setShowGutter(nextProps.showGutter);
+        editor.renderer.setShowGutter(nextProps.showGutter);
     }
-  },
-  render: function() {
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.onChange && prevState.value !== this.state.value) {
+      this.props.onChange(this.state.value);
+    }
+    if (this.props.onChangeCursor && prevState.cursorPosition !== this.state.cursorPosition) {
+      this.props.onChangeCursor(this.state.cursorPosition);
+    }
+    if (this.props.onChangeSelection && prevState.selection !== this.state.selection) {
+      this.props.onChangeSelection(this.state.selection);
+    }
+  }
+
+  render() {
     return (
       <div id={this.props.name}
         ref='ace'
@@ -190,4 +207,4 @@ module.exports = React.createClass({
       </div>
     );
   }
-});
+}
