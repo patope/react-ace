@@ -11,7 +11,7 @@
     "build:umd:min": "webpack src/ace.js dist/react-ace.min.js --config webpack.config.production.js",
     "build:example": "cd example && npm install",
     "build": "npm run build:lib && npm run build:umd && npm run build:umd:min",
-    "install": "npm run build",
+    "install": "npm run build:lib",
     "check": "npm run lint",
     "preversion": "npm run clean && npm run check",
     "version": "npm run build",
